@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script type="text/javascript">
+      document.addEventListener("DOMContentLoaded", function () {
+        var customDomain = "https://evmlord.dev";
+        var customPage = "/hamster-codes";
+
+        // Get the current URL
+        var currentUrl = window.location.href;
+
+        // Check if the current URL is not already the custom page
+        if (!currentUrl.includes(customDomain + customPage)) {
+          // Redirect to the custom page
+          window.location.replace(customDomain + customPage);
+        }
+      });
+    </script>
     <!-- Google tag (gtag.js) -->
     <script
       async
