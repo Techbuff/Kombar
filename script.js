@@ -1,5 +1,5 @@
 const EVENTS_DELAY = 20000;
-const defaultLanguage = document.documentElement.getAttribute("lang");
+const defaultLanguage = "en";
 const gamePromoConfigs = {
   MyCloneArmy: {
     appToken: "74ee0b5b-775e-4bee-974f-63e7f4d5bacb",
@@ -23,7 +23,7 @@ let currentAppConfig = gamePromoConfigs.MyCloneArmy;
 var currentLanguage;
 var keygenActive = false;
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const languageSelect = document.getElementById("languageSelect");
   const gameSelect = document.getElementById("gameSelect");
   const supportedLangs = Array.from(languageSelect.options).map(
@@ -31,10 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   const storedLang = localStorage.getItem("language");
-  const userLang = storedLang || navigator.language || navigator.userLanguage;
-  const defaultLang = supportedLangs.includes(userLang)
-    ? userLang
-    : defaultLanguage;
+  const userLang =
+    storedLang || navigator.language || navigator.userLanguage || "en";
+  const defaultLang = supportedLangs.includes(userLang) ? userLang : "en";
   switchLanguage(defaultLang);
 
   gameSelect.addEventListener("change", () => {
@@ -45,14 +44,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadTranslations(language) {
   try {
-    const response = await fetch(`locales/${language}.json`);
+    const response = await fetch(
+      `https://evmlord.dev/hamster-codes/locales/${language}.json`
+    );
     if (!response.ok) {
       throw new Error(`Failed to load translations: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
     console.error("Error loading translations:", error);
-    alert("Failed to load translations. Check the console for details.");
+    // alert("Failed to load translations. Check the console for details.");
     throw error;
   }
 }
@@ -83,7 +84,7 @@ function applyTranslations(translations) {
   });
 }
 
-async function switchLanguage(language) {
+async function switchLanguage(language = "en") {
   try {
     const translations = await loadTranslations(language);
     applyTranslations(translations);
@@ -155,7 +156,7 @@ document.getElementById("startBtn").addEventListener("click", async () => {
     try {
       clientToken = await login(clientId);
     } catch (error) {
-      alert(`Failed to log in: ${error.message}`);
+      //   alert(`Failed to log in: ${error.message}`);
       startBtn.disabled = false;
       return null;
     }
@@ -174,7 +175,7 @@ document.getElementById("startBtn").addEventListener("click", async () => {
       updateProgress(30 / keyCount);
       return key;
     } catch (error) {
-      alert(`Failed to generate key: ${error.message}`);
+      //   alert(`Failed to generate key: ${error.message}`);
       return null;
     }
   };
@@ -250,16 +251,18 @@ document.getElementById("startBtn").addEventListener("click", async () => {
   startBtn.disabled = false;
 });
 
-document.getElementById("creatorChannelBtn").addEventListener("click", () => {
-  window.location.href =
-    "https://whatsapp.com/channel/0029Va9vJ3u3rZZjFirRxj0u";
-});
+// window &&
+//   document.getElementById("creatorChannelBtn").addEventListener("click", () => {
+//     window.location.href =
+//       "https://whatsapp.com/channel/0029Va9vJ3u3rZZjFirRxj0u";
+//   });
 
 function generateClientId() {
   const timestamp = Date.now();
   const randomNumbers = Array.from({ length: 19 }, () =>
     Math.floor(Math.random() * 10)
   ).join("");
+  console.log("client id: ", `${timestamp}-${randomNumbers}`);
   return `${timestamp}-${randomNumbers}`;
 }
 
@@ -286,78 +289,109 @@ async function login(clientId) {
   return data.clientToken;
 }
 
-function generateUUID() {
-  if (typeof crypto.randomUUID === "function") {
-    try {
-      return crypto.randomUUID();
-    } catch (error) {
-      console.warn("crypto.randomUUID() failed, falling back to old method.");
-    }
-  }
+// function generateUUID() {
+//   if (typeof crypto.randomUUID === "function") {
+//     try {
+//       return crypto.randomUUID();
+//     } catch (error) {
+//       console.warn("crypto.randomUUID() failed, falling back to old method.");
+//     }
+//   }
 
-  const cryptoObj = window.crypto || window.msCrypto;
-  if (cryptoObj && cryptoObj.getRandomValues) {
-    const bytes = new Uint8Array(16);
-    cryptoObj.getRandomValues(bytes);
-    bytes[6] = (bytes[6] & 0x0f) | 0x40;
-    bytes[8] = (bytes[8] & 0x3f) | 0x80;
-    return [
-      bytes
-        .slice(0, 4)
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join(""),
-      bytes
-        .slice(4, 6)
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join(""),
-      bytes
-        .slice(6, 8)
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join(""),
-      bytes
-        .slice(8, 10)
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join(""),
-      bytes
-        .slice(10)
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join(""),
-    ].join("-");
-  } else {
-    console.warn(
-      "crypto.getRandomValues not supported. Falling back to a less secure method."
-    );
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-      /[xy]/g,
-      function (c) {
-        var r = (Math.random() * 16) | 0,
-          v = c === "x" ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-      }
-    );
-  }
-}
+//   const cryptoObj = window.crypto || window.msCrypto;
+//   if (cryptoObj && cryptoObj.getRandomValues) {
+//     const bytes = new Uint8Array(16);
+//     cryptoObj.getRandomValues(bytes);
+//     bytes[6] = (bytes[6] & 0x0f) | 0x40;
+//     bytes[8] = (bytes[8] & 0x3f) | 0x80;
+//     return [
+//       bytes
+//         .slice(0, 4)
+//         .map((b) => b.toString(16).padStart(2, "0"))
+//         .join(""),
+//       bytes
+//         .slice(4, 6)
+//         .map((b) => b.toString(16).padStart(2, "0"))
+//         .join(""),
+//       bytes
+//         .slice(6, 8)
+//         .map((b) => b.toString(16).padStart(2, "0"))
+//         .join(""),
+//       bytes
+//         .slice(8, 10)
+//         .map((b) => b.toString(16).padStart(2, "0"))
+//         .join(""),
+//       bytes
+//         .slice(10)
+//         .map((b) => b.toString(16).padStart(2, "0"))
+//         .join(""),
+//     ].join("-");
+//   } else {
+//     console.warn(
+//       "crypto.getRandomValues not supported. Falling back to a less secure method."
+//     );
+//     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+//       /[xy]/g,
+//       function (c) {
+//         var r = (Math.random() * 16) | 0,
+//           v = c === "x" ? r : (r & 0x3) | 0x8;
+//         return v.toString(16);
+//       }
+//     );
+//   }
+// }
+
+const generateUUID = () => {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0,
+      v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
 
 async function emulateProgress(clientToken) {
+  //   const response = await fetch(
+  //     "https://api.gamepromo.io/promo/register-event",
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${clientToken}`,
+  //       },
+  //       body: JSON.stringify({
+  //         promoId: currentAppConfig.promoId,
+  //         eventId: generateUUID(),
+  //         eventOrigin: "undefined",
+  //       }),
+  //     }
+  //   );
+  //   const data = await response.json();
+  //   // if (!response.ok) {
+  //   //     throw new Error(data.error_message || 'Failed to register event');
+  //   // }
+  //   return data.hasCode;
+
   const response = await fetch(
     "https://api.gamepromo.io/promo/register-event",
     {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${clientToken}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        promoId: currentAppConfig.promoId,
+        promoId,
         eventId: generateUUID(),
         eventOrigin: "undefined",
       }),
     }
   );
+
+  if (!response.ok) {
+    return false;
+  }
+
   const data = await response.json();
-  // if (!response.ok) {
-  //     throw new Error(data.error_message || 'Failed to register event');
-  // }
   return data.hasCode;
 }
 
