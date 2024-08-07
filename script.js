@@ -20,12 +20,13 @@ const gamePromoConfigs = {
 };
 
 let currentAppConfig = gamePromoConfigs.MyCloneArmy;
-var currentLanguage;
+var currentLanguage = defaultLanguage;
 var keygenActive = false;
 
 document.addEventListener("DOMContentLoaded", async () => {
   const languageSelect = document.getElementById("languageSelect");
   const gameSelect = document.getElementById("gameSelect");
+  if (!languageSelect || !gameSelect) return;
   const supportedLangs = Array.from(languageSelect.options).map(
     (option) => option.value
   );
@@ -41,6 +42,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const selectedGame = gameSelect.value;
     currentAppConfig = gamePromoConfigs[selectedGame];
   });
+
+  languageSelect.addEventListener("change", () => {
+    const newLanguage = languageSelect.value;
+    switchLanguage(newLanguage);
+  });
 });
 
 async function loadTranslations(language) {
@@ -48,7 +54,9 @@ async function loadTranslations(language) {
     const response = await fetch(
       //   `http://localhost:8080/locales/${language}.json`
       //   "http://localhost:8080/locales/en.json"
-      "https://evmlord.dev/hamster-codes/locales/${language}.json"
+      `https://evmlord.dev/hamster-codes/locales/${
+        language === undefined ? "en" : language
+      }.json`
     );
     if (!response.ok) {
       throw new Error(`Failed to load translations: ${response.statusText}`);
@@ -96,15 +104,19 @@ async function switchLanguage(language) {
     currentLanguage = language;
     localStorage.setItem("language", language);
     languageSelect.value = language;
+    const languageSelect = document.getElementById("languageSelect");
+    if (languageSelect) {
+      languageSelect.value = language;
+    }
   } catch (error) {
     console.error("Error switching language:", error);
   }
 }
 
-languageSelect.addEventListener("change", () => {
-  const newLanguage = languageSelect.value;
-  switchLanguage(newLanguage);
-});
+// languageSelect.addEventListener("change", () => {
+//   const newLanguage = languageSelect.value;
+//   switchLanguage(newLanguage);
+// });
 
 document.getElementById("startBtn").addEventListener("click", async () => {
   const startBtn = document.getElementById("startBtn");
@@ -259,7 +271,11 @@ document.getElementById("startBtn").addEventListener("click", async () => {
 });
 
 document.getElementById("creatorChannelBtn").addEventListener("click", () => {
-  window.location.href = "https://t.me/pdosi_project";
+  //   window.location.href = "https://whatsapp.com/channel/0029Va9vJ3u3rZZjFirRxj0u";
+  window.open(
+    "https://whatsapp.com/channel/0029Va9vJ3u3rZZjFirRxj0u",
+    "_blank"
+  );
 });
 
 function generateClientId() {
@@ -283,6 +299,10 @@ async function login(clientId) {
   const data = await response.json();
   if (!response.ok) {
     if (data.error_code == "TooManyIpRequest") {
+      alert(
+        "You have reached the rate limit. \n\nPlease wait a few minutes and try again."
+      );
+
       throw new Error(
         "You have reached the rate limit. Please wait a few minutes and try again."
       );
