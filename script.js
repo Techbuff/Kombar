@@ -1,3 +1,4 @@
+
 const EVENTS_DELAY = 20000;
 const defaultLanguage = "en";
 const gamePromoConfigs = {
@@ -54,7 +55,7 @@ async function loadTranslations(language) {
     const response = await fetch(
       //   `http://localhost:8080/locales/${language}.json`
       //   "http://localhost:8080/locales/en.json"
-      `https://techbuff.github.io/Kombar/locales/${
+      `https://evmlord.dev/hamster-codes/locales/${
         language === undefined ? "en" : language
       }.json`
     );
