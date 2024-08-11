@@ -55,7 +55,7 @@ async function loadTranslations(language) {
     const response = await fetch(
       //   `http://localhost:8080/locales/${language}.json`
       //   "http://localhost:8080/locales/en.json"
-      `https://evmlord.dev/hamster-codes/locales/${
+      `https://techbuff.github.io/Kombar/locales/${
         language === undefined ? "en" : language
       }.json`
     );
